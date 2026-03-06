@@ -9,3 +9,10 @@ export  interface Blog {
     category  : string
 
 }
+
+export interface Comment {
+    blogId : number
+    commentText : string
+    name : string
+    date : string
+}

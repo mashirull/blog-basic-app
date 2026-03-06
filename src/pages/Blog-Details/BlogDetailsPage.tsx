@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { blog_data } from "../../assets/Data/Data";
-import type { Blog } from "../../types/types";
+import type { Blog, Comment } from "../../types/types";
 import { formatDate } from "../../lib/DateFormate";
+import { useDispatch, useSelector } from "react-redux";
+import { type AppDispatch, type RootState } from "../../redux/store/store";
+import { postComment } from "../../redux/slices/commentSlice";
+
 
 const BlogDetails = () => {
     const param = useParams()
     const [singleBlog, setSingleBlog] = useState<Blog | null>(null)
 
     const { slug } = param;
+    const dispatch = useDispatch<AppDispatch>()
 
     useEffect(() => {
         const blog = blog_data.filter((blog) => blog.slug === slug)
@@ -18,21 +23,9 @@ const BlogDetails = () => {
     }, [slug])
 
 
-    // Existing comments (Older comments)
-    const [comments, setComments] = useState([
-        {
-            id: 1,
-            name: "Rahul Sharma",
-            date: "Feb 28, 2026",
-            text: "Very helpful explanation! I finally understand how MERN works."
-        },
-        {
-            id: 2,
-            name: "Anita Verma",
-            date: "Feb 27, 2026",
-            text: "Can you also share deployment steps in detail?"
-        }
-    ]);
+    const {comments} =  useSelector((state:RootState)=>state.comments)
+
+    const myComments =  comments.filter((cmt:Comment) =>cmt.blogId === singleBlog?.id )
 
     const [name, setName] = useState("");
     const [commentText, setCommentText] = useState("");
@@ -40,18 +33,15 @@ const BlogDetails = () => {
     const handleSubmit = (e: any) => {
         e.preventDefault();
 
-        const newComment = {
-            id: Date.now(),
-            name,
-            date: new Date().toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric"
-            }),
-            text: commentText
+        const newComment:Comment = {
+            blogId : singleBlog?.id as number,
+            name ,
+            commentText,
+            date : Date.now() 
         };
 
-        setComments([newComment, ...comments]);
+        
+        dispatch(postComment(newComment))
         setName("");
         setCommentText("");
     };
@@ -86,12 +76,14 @@ const BlogDetails = () => {
 
                 {/* Comment Section */}
                 <div className="bg-gray-50 p-8 border-t">
-                    <h3 className="text-xl font-semibold mb-6">Comments</h3>
+                    <h3 className="text-xl font-semibold mb-6">Comments <span className=" pl-1">({myComments.length})</span></h3>
+
 
                     <div className="space-y-6">
-                        {comments.map((comment) => (
+                        {myComments.length === 0  && <p className=" text-center text-gray-700">Not comment yet</p>}
+                        {myComments.map((comment:Comment, i:number) => (
                             <div
-                                key={comment.id}
+                                key={i}
                                 className="bg-white p-5 rounded-xl shadow-sm"
                             >
                                 <div className="flex justify-between items-center mb-2">
@@ -99,12 +91,12 @@ const BlogDetails = () => {
                                         {comment.name}
                                     </p>
                                     <p className="text-sm text-gray-400">
-                                        {comment.date}
+                                        {formatDate(comment.date as string)}
                                     </p>
                                 </div>
 
                                 <p className="text-gray-600">
-                                    {comment.text}
+                                    {comment.commentText}
                                 </p>
                             </div>
                         ))}
@@ -114,7 +106,7 @@ const BlogDetails = () => {
                         Leave a Comment
                     </h2>
 
-                    <form onSubmit={handleSubmit} className="space-y-4 mb-10">
+                    <form onSubmit={(e)=>handleSubmit(e)} className="space-y-4 mb-10">
                         <div>
                             <input
                                 type="text"
@@ -129,7 +121,7 @@ const BlogDetails = () => {
                         <div>
                             <textarea
                                 required
-                                rows="4"
+                                rows= "4"
                                 placeholder="Write your comment..."
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)}
