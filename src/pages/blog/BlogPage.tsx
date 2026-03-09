@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { blog_data } from '../../assets/Data/Data'
 import type { Blog } from '../../types/types'
 import BlogCard from '../../components/BlogCard'
@@ -17,9 +17,13 @@ const BlogPage = () => {
         )
     })
 
+    useEffect(()=>{
+        window.scrollTo(0,0)
+    },[])
+
 
     return (
-        <div className=' px-32 py-12 min-h-[90dvh]'>
+        <div className=' px-4 sm:px-6 md:px-6 lg:px-8 xl:px-32 py-12 min-h-[90dvh]'>
             <div >
                 <input
                     type="text"
@@ -42,7 +46,7 @@ const BlogPage = () => {
                 </div>
             </div>
 
-            <div className='grid grid-cols-3 content-center gap-7  pt-16 pb-8'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 items-stretch gap-6   pt-16 pb-8'>
                 {filteredBlog.map((blog: Blog) => (
                     <BlogCard key={blog.id} image={blog.image} category={blog.category} date={blog.date} excerpt={blog.excerpt} title={blog.title} id={blog.id} slug={blog.slug} />
                 ))}

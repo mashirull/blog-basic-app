@@ -19,6 +19,9 @@ const BlogDetails = () => {
         const blog = blog_data.filter((blog) => blog.slug === slug)
 
         setSingleBlog(blog[0])
+        if(blog.length === 0){
+            setSingleBlog(null)
+        }
         window.scrollTo(0,0)
     }, [slug])
 
@@ -44,7 +47,12 @@ const BlogDetails = () => {
         dispatch(postComment(newComment))
         setName("");
         setCommentText("");
+        
     };
+
+    if(!singleBlog){
+        return <h1 className=" text-center my-40 text-3xl">Blog not found</h1>
+    }
 
     return (
         <div className=" min-h-screen py-16 px-6">

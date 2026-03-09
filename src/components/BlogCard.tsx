@@ -8,7 +8,7 @@ const BlogCard = ({ image, title, excerpt, date, category , slug}: Blog) => {
     const navigator =  useNavigate()
 
     return (
-        <div className=" w-[340px] h-[455px] shadow-sm p-4 rounded-sm bg-white relative hover:shadow-xl hover:translate-y-1 transition-all">
+        <div className=" w-[100%] h-[465px] lg:h-[455px] shadow-sm p-4 rounded-sm bg-white relative hover:shadow-xl hover:translate-y-1 transition-all">
             <figure className=" w-fit">
                 <img src={image} alt="random" className=" w-full h-fit" />
             </figure>
